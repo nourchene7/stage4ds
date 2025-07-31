@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Détection Anomalies</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 2em;
+            background: #f0f4f8;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .stats {
+            margin-bottom: 20px;
+        }
+        #graph_classes, #graph_actions {
+            max-width: 700px;
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard de suivi des analyses</h1>
+
+    <div class="stats">
+        <p><strong>Total d'images analysées :</strong> {{ total_images }}</p>
+        <p><strong>Images infectées :</strong> {{ infected_count }}</p>
+        <p><strong>Images défectueuses :</strong> {{ defected_count }}</p>
+        <p><strong>Produits à rejeter :</strong> {{ rejeter_count }}</p>
+        <p><strong>Produits à recycler :</strong> {{ recycler_count }}</p>
+    </div>
+
+    <h2>Répartition par classe</h2>
+    <div id="graph_classes"></div>
+
+    <h2>Répartition des actions</h2>
+    <div id="graph_actions"></div>
+
+    <script>
+        const classes = JSON.parse('{{ classes|safe }}');
+        const counts = JSON.parse('{{ counts|safe }}');
+
+        const actions = JSON.parse('{{ actions|safe }}');
+        const actions_counts = JSON.parse('{{ actions_counts|safe }}');
+
+        // Bar chart classes
+        var data_classes = [{
+            x: classes,
+            y: counts,
+            type: 'bar',
+            marker: {color: ['#e74c3c', '#f39c12', '#2ecc71']}
+        }];
+
+        var layout_classes = {
+            title: "Nombre d'images par classe",
+            yaxis: {title: "Nombre d'images"},
+            margin: {t:40, b:40}
+        };
+
+        Plotly.newPlot('graph_classes', data_classes, layout_classes);
+
+        // Pie chart actions
+        var data_actions = [{
+            labels: actions,
+            values: actions_counts,
+            type: 'pie',
+            textinfo: 'label+percent',
+            insidetextorientation: 'radial',
+            marker: {colors: ['#c0392b', '#27ae60', '#95a5a6']}
+        }];
+
+        var layout_actions = {
+            title: "Répartition des actions prises",
+            margin: {t:40, b:40}
+        };
+
+        Plotly.newPlot('graph_actions', data_actions, layout_actions);
+    </script>
+</body>
+</html>
